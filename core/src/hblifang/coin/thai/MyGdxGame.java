@@ -22,7 +22,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Texture wallpaperTexture, cloudTexture, pigTexture, coinsTexture;
 	private OrthographicCamera objOrthographicCamera;
-	private BitmapFont nameBitmapFont;
+	private BitmapFont nameBitmapFont, scoreBitmapFont;
 	int xCloudAnInt, yCloudAnInt = 600;
 	private boolean cloudABoolean = true;
 	private Rectangle picRectangle, coinsRectangle;
@@ -32,6 +32,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private long lastDropCoins;
 	private Iterator<Rectangle> coinsIterator; // ===>Java.util
 	private Sound waterDropSound, coinDropSound;
+	private int scoreAnInt = 0;
 
 
 	@Override
@@ -47,7 +48,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//Setup BitmapFont
 		nameBitmapFont = new BitmapFont();
-		nameBitmapFont.setColor(Color.YELLOW); //ใส่สี
+		nameBitmapFont.setColor(Color.RED); //ใส่สี
 		nameBitmapFont.setScale(4); //scale font
 
 		//Setup Cloud
@@ -79,6 +80,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Setup CoinDrop
 		coinDropSound = Gdx.audio.newSound(Gdx.files.internal("coins_drop.wav"));
 
+		//Setup scoreBitMapFont
+		scoreBitmapFont = new BitmapFont();
+		scoreBitmapFont.setColor(Color.YELLOW);
+		scoreBitmapFont.setScale(4);
 
 	} //create เอาไว้กำหนดค่า
 
@@ -122,6 +127,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (Rectangle forCoins : coinsArray) {
 			batch.draw(coinsTexture, forCoins.x, forCoins.y);
 		}
+
+		//Drawable Score วาดโชว์คะแนน
+		scoreBitmapFont.draw(batch, "Score = " + Integer.toString(scoreAnInt), 900, 750);
 
 		batch.end();
 
