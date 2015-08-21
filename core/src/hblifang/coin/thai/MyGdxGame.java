@@ -98,7 +98,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
 
 		//Setup BackgroundMusic
-		backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("numalee.mp3"));
+		backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("bggame.mp3"));
 
 		//Setup ShowScore
 		showScoreBitmapFont = new BitmapFont();
@@ -212,6 +212,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			//When Rain drop into Floor
 			if (myRainRectangle.y + 64 < 0) {
+				falseAnInt += 1;
 				waterDropSound.play();
 				rainIterator.remove();
 			} //if
