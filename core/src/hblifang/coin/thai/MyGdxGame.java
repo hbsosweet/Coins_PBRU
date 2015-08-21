@@ -31,6 +31,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Array<Rectangle> coinsArray;
 	private long lastDropCoins;
 	private Iterator<Rectangle> coinsIterator; // ===>Java.util
+	private Sound waterDropSound, coinDropSound;
 
 
 	@Override
@@ -63,7 +64,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		picRectangle.height = 56;
 
 		//Setup Pig Sound
-		pigSound = Gdx.audio.newSound(Gdx.files.internal("dog.wav"));
+		pigSound = Gdx.audio.newSound(Gdx.files.internal("mariojump.wav"));
 
 		//Setup Coins
 		coinsTexture = new Texture("coins.png");
@@ -71,6 +72,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Create coinsArray
 		coinsArray = new Array<Rectangle>();
 		coinsRandomDrop();
+
+		//Setup WaterDrop
+		waterDropSound = Gdx.audio.newSound(Gdx.files.internal("water_drop.wav"));
+
+		//Setup CoinDrop
+		coinDropSound = Gdx.audio.newSound(Gdx.files.internal("coins_drop.wav"));
 
 
 	} //create เอาไว้กำหนดค่า
@@ -108,8 +115,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Drawable BitmapFont
 		nameBitmapFont.draw(batch, "Little K Coins Collector", 50, 750);
 
-		//Drawable Pig
+		//Drawable Pig วาดรูปตัวเก็บเหรียญ (หมูหมี)
 		batch.draw(pigTexture, picRectangle.x, picRectangle.y);
+
+		//Drawable Coins วาดรูปเหรียญ
+		for (Rectangle forCoins : coinsArray) {
+			batch.draw(coinsTexture, forCoins.x, forCoins.y);
+		}
 
 		batch.end();
 
@@ -119,8 +131,42 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Active When Touch Screen
 		activeTouchScreen();
 
+		//Random Drop Coins ทำให้เหรียญตกลงมา
+		randomDropCoins();
+
+
 
 	} //render ตัวนี้คือ loop
+
+	private void randomDropCoins() {
+
+		if (TimeUtils.nanoTime() - lastDropCoins > 1E9) //1E9 คือ 10^9 หมายถึงให้ทำการดรอปเหรียญ
+		{
+			coinsRandomDrop();
+		}
+
+		coinsIterator = coinsArray.iterator();
+		while (coinsIterator.hasNext()) //hasNext หมายถึง มีค่าต่อไปเรื่อยๆ
+		{
+			Rectangle myCoinsRectangle = coinsIterator.next();
+			myCoinsRectangle.y -= 50 * Gdx.graphics.getDeltaTime(); //เป็น 50 เพราะตัวละครที่รับเหรียญต้องวิ่งไวกว่าเหรียญ
+
+			//When Coin into Floor เมื่อเหรียญถึงพื้นจะให้ทำการล้างหน่วยความจำ
+			if (myCoinsRectangle.y + 64 < 0) //เหรียญอยู่ตรงขอบจอด้านล่าง
+			{
+				waterDropSound.play();
+				coinsIterator.remove(); //ให้ทำการลบค่าออกไป
+			} //if
+
+			//When Coins OverLap Pig
+			if (myCoinsRectangle.overlaps(picRectangle)) {
+				coinDropSound.play();
+				coinsIterator.remove();
+			} //if
+
+		} //while Loop
+
+	}		// นี่คือ randomDropCoins
 
 	private void activeTouchScreen() {
 		if (Gdx.input.isTouched()) {
@@ -130,6 +176,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			objVector3 = new Vector3(); //ตัวทำหน้าที่ในการเก็บค่าเมื่อนิ้วไปโดน
 			objVector3.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+
 			if (objVector3.x < Gdx.graphics.getWidth()/2) {
 				if (picRectangle.x < 0) {
 					picRectangle.x = 0;
